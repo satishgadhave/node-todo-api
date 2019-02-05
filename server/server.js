@@ -11,8 +11,6 @@ app.use(bodyParser.json());
 
 
 app.post('/todos', (req, res) => {
-    console.log(req.body.text);
-
     var todo = new Todo({
         text: req.body.text
     });
@@ -33,6 +31,23 @@ app.get('/todos', (req, res) => {
     .catch( (e) => {
         res.status(400).send(e);
     });
+});
+
+app.get('/todos/:id', (req, res) => {
+    Todo.findOne({ _id: req.params.id})
+        .then( (todo) => {
+
+
+            console.log(todo);
+            if(!todo) {
+                res.status(400).send();
+            }
+
+            res.send(todo);
+        })
+        .catch( e => {
+            res.status(400).send();
+        });
 });
 
 
