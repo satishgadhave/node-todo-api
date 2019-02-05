@@ -26,6 +26,16 @@ app.post('/todos', (req, res) => {
     });
 });
 
+app.get('/todos', (req, res) => {
+    Todo.find().then((todos) => {
+        res.send({ todos });
+    })
+    .catch( (e) => {
+        res.status(400).send(e);
+    });
+});
+
+
 app.listen(8002, () => {
     console.log('Listening on port 8002...');
 });
