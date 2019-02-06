@@ -3,12 +3,15 @@ const request = require('supertest');
 
 const app = require('./../server').app;
 const Todo = require('./../models/todo').Todo;
+const ObjectID = require('mongodb').ObjectID;
 
 const todos = [
     {
+        _id: new ObjectID(),
         text: "my todo 1"
     },
     {
+        _id: new ObjectID(),
         text: "my todo 2"
     }
 ];
@@ -19,7 +22,8 @@ beforeEach( (done) => {
     })
     .then( () => {
         done();
-    });
+    })
+    .catch(console.log);
 });
 
 describe('POST /todos', () => {
@@ -73,7 +77,9 @@ describe('POST /todos', () => {
             });
             
     });
+});
 
+describe('GET /todo/:id', () => {
     it('should get all todos', (done) => {
         request(app)
             .get('/todos')
@@ -82,5 +88,35 @@ describe('POST /todos', () => {
                 expect(res.body.todos.length).toBe(2);
             })
             .end(done);
+        });
+});
+
+describe('GET /todo/:id', () => {
+    it('should get a todo by id', (done) => {
+        request(app)
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect( (res) => {
+                expect(res.body.todo.text).toBe(todos[0].text);
+            })
+            .end(done);
+    });
+
+    it('should return 404 if todo not found', (done) => {
+        var nonExistingId = new ObjectID().toHexString();
+
+        request(app)
+            .get(`/todos/${nonExistingId}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return 404 if invalid object id', (done) => {
+        request(app)
+            .get('/todos/123')
+            .expect(404)
+            .end(done);
     });
 });
+
+
