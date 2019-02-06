@@ -8,11 +8,13 @@ const ObjectID = require('mongodb').ObjectID;
 const todos = [
     {
         _id: new ObjectID(),
-        text: "my todo 1"
+        text: "my todo 1",
+        completed: false
     },
     {
         _id: new ObjectID(),
-        text: "my todo 2"
+        text: "my todo 2",
+        completed: false
     }
 ];
 
@@ -123,7 +125,7 @@ describe('GET /todo/:id', () => {
 describe('DELETE /todos/:id', () => {
     it('should delete a todo by id', (done) => {
         var id = todos[0]._id.toHexString();
-        
+
         request(app)
             .delete(`/todos/${id}`)
             .expect(200)
@@ -159,3 +161,36 @@ describe('DELETE /todos/:id', () => {
     });
 });
 
+describe('PATCH /todos/:id', () => {
+    it('should update a todo', (done) => {
+        var id = todos[0]._id;
+        var updatedTodo = {
+            text: 'test todo1',
+            completed: true
+        }
+
+        request(app)
+            .patch(`/todos/${id}`)
+            .send( updatedTodo )
+            .expect(200)
+            .expect( (res) => {
+                expect(res.body.todo.text).toBe(updatedTodo.text);
+                expect(res.body.todo.completed).toBe(updatedTodo.completed);
+                expect(res.body.todo.completedAt).toBeA('number');
+            })
+            .end((err, res) => {
+                if(err) {
+                    return done(err);
+                }
+
+                Todo.findById(id)
+                    .then((todo) => {
+                        expect(todo.text).toBe(updatedTodo.text);
+                        expect(todo.completed).toBe(updatedTodo.completed);
+
+                        return done();
+                    })
+                    .catch( e => { done(); })
+            });
+    });
+});

@@ -1,8 +1,9 @@
-var ObjectID = require('mongodb').ObjectID;
-var express = require('express');
-var bodyParser = require('body-parser');
+const ObjectID = require('mongodb').ObjectID;
+const express = require('express');
+const bodyParser = require('body-parser');
 const _ = require('lodash');
 
+require('./config/config');
 var mongoose = require('./db/mongoose').mongoose;
 var Todo = require('./models/todo').Todo;
 var User = require('./models/user').User;
@@ -99,7 +100,7 @@ app.patch('/todos/:id', (req, res) => {
             res.status(404).send();
         }
 
-        res.send(todo);
+        res.send({todo});
     })
     .catch(e => res.status(400).send())
 });
