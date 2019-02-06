@@ -123,7 +123,7 @@ describe('GET /todo/:id', () => {
 describe('DELETE /todos/:id', () => {
     it('should delete a todo by id', (done) => {
         var id = todos[0]._id.toHexString();
-        console.log(id);
+        
         request(app)
             .delete(`/todos/${id}`)
             .expect(200)
